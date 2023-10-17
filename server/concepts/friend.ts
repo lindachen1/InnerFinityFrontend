@@ -18,9 +18,7 @@ export default class FriendConcept {
   public readonly requests = new DocCollection<FriendRequestDoc>("friendRequests");
 
   async getRequests(user: ObjectId) {
-    return await this.requests.readMany({
-      $or: [{ from: user }, { to: user }],
-    });
+    return await this.requests.readMany({ to: user, status: "pending" });
   }
 
   async sendRequest(from: ObjectId, to: ObjectId) {
@@ -140,5 +138,14 @@ export class AlreadyFriendsError extends NotAllowedError {
     public readonly user2: ObjectId,
   ) {
     super("{0} and {1} are already friends!", user1, user2);
+  }
+}
+
+export class NotFriendsError extends NotAllowedError {
+  constructor(
+    public readonly user1: ObjectId,
+    public readonly user2: ObjectId,
+  ) {
+    super("{0} and {1} are not friends!", user1, user2);
   }
 }
