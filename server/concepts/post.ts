@@ -61,10 +61,23 @@ export default class PostConcept {
     return { msg: "Pending post rejected, will be deleted. " };
   }
 
-  async getPendingPosts(query: Filter<PendingPostDoc>) {
-    const posts = await this.pendingPosts.readMany(query, {
-      sort: { dateUpdated: -1 },
-    });
+  async getPendingPostsByApprover(author: ObjectId) {
+    const posts = await this.pendingPosts.readMany(
+      { requiresApproval: author },
+      {
+        sort: { dateUpdated: -1 },
+      },
+    );
+    return posts;
+  }
+
+  async getPendingPostsByAuthor(author: ObjectId) {
+    const posts = await this.pendingPosts.readMany(
+      { authors: author },
+      {
+        sort: { dateUpdated: -1 },
+      },
+    );
     return posts;
   }
 

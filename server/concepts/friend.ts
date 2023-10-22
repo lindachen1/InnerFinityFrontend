@@ -17,8 +17,17 @@ export default class FriendConcept {
   public readonly friends = new DocCollection<FriendshipDoc>("friends");
   public readonly requests = new DocCollection<FriendRequestDoc>("friendRequests");
 
-  async getRequests(user: ObjectId) {
+  async removeUser(user: ObjectId) {
+    await this.friends.deleteMany({ $or: [{ user1: user }, { user2: user }] });
+    await this.requests.deleteMany({ $or: [{ from: user }, { to: user }] });
+  }
+
+  async getIncomingRequests(user: ObjectId) {
     return await this.requests.readMany({ to: user, status: "pending" });
+  }
+
+  async getOutgoingRequests(user: ObjectId) {
+    return await this.requests.readMany({ from: user, status: "pending" });
   }
 
   async sendRequest(from: ObjectId, to: ObjectId) {

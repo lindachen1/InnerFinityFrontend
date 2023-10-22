@@ -2,14 +2,12 @@
 import { onBeforeMount, ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
 
-const imageURL = ref("");
-const caption = ref("");
-const altText = ref("");
-const allowRequests = ref(false);
+const props = defineProps(["post"]);
+const emit = defineEmits(["refreshComments"]);
 const loaded = ref(false);
 const friends = ref<Array<string>>([]);
 const lists = ref<Array<Record<string, any>>>([]);
-const authors = ref<Array<string>>([]);
+const content = ref("");
 const audience_users = ref<Array<string>>([]);
 const audience_lists = ref<Array<string>>([]);
 
@@ -33,23 +31,20 @@ async function getLists() {
   lists.value = listResults;
 }
 
-const createPost = async (imageURL: string, caption: string, altText: string, authors: Array<string>, allowRequests: boolean, shareWithUsers: Array<string>, shareWithLists: Array<string>) => {
+async function createComment(content: string, shareWithUsers: Array<string>, shareWithLists: Array<string>) {
   try {
-    await fetchy("/api/posts", "POST", {
-      body: { imageURL, caption, altText, authors, allowRequests, shareWithUsers, shareWithLists },
+    await fetchy(`/api/posts/${props.post._id}/comments`, "POST", {
+      body: { content, shareWithUsers, shareWithLists },
     });
   } catch (_) {
     return;
   }
   emptyForm();
-};
+  emit("refreshComments");
+}
 
 const emptyForm = () => {
-  imageURL.value = "";
-  caption.value = "";
-  altText.value = "";
-  authors.value = [];
-  allowRequests.value = false;
+  content.value = "";
   audience_users.value = [];
   audience_lists.value = [];
 };
@@ -62,24 +57,9 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <form @submit.prevent="createPost(imageURL, caption, altText, authors, allowRequests, audience_users, audience_lists)">
-    <label for="image">Post Image:</label>
-    <input type="url" id="image" v-model="imageURL" placeholder="Enter an image URL!" required />
-
-    <label for="caption">Post Caption:</label>
-    <textarea id="caption" v-model="caption" placeholder="Enter a caption!" required> </textarea>
-
-    <label for="altText">Alt Text:</label>
-    <textarea id="altText" v-model="altText" placeholder="Enter alt text for the image!" required> </textarea>
-
-    <section v-if="loaded">
-      <p>Choose authors (select none for individual post):</p>
-      <p v-if="friends.length === 0">No friends to choose from!</p>
-      <div v-for="user in friends" :key="user">
-        <input type="checkbox" :id="user" :value="user" v-model="authors" />
-        <label for="checkbox">{{ user }}</label>
-      </div>
-    </section>
+  <form @submit.prevent="createComment(content, audience_users, audience_lists)">
+    <label for="content">Comment:</label>
+    <textarea id="content" v-model="content" placeholder="Enter comment content!" required> </textarea>
 
     <section v-if="loaded">
       <p>Choose audience (users):</p>
@@ -103,12 +83,7 @@ onBeforeMount(async () => {
       </div>
     </section>
 
-    <section>
-      <input type="checkbox" v-model="allowRequests" />
-      <label for="checkbox">Show as hidden post to all other users.</label>
-    </section>
-
-    <button type="submit" class="pure-button-primary pure-button">Create Post</button>
+    <button type="submit" class="pure-button-primary pure-button">Post Comment</button>
   </form>
 </template>
 

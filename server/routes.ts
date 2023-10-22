@@ -47,7 +47,7 @@ class Routes {
     const user = WebSession.getUser(session);
 
     // Deleting a user means they approve any pending posts that were still awaiting their approval
-    const toBeApproved = await Post.getPendingPosts({ requiresApproval: user });
+    const toBeApproved = await Post.getPendingPostsByApprover(user);
     for (const post of toBeApproved) {
       const result = await Post.approvePost(post._id, user);
       if (result.post && result.msg === "Post successfully published!") {
@@ -55,8 +55,10 @@ class Routes {
       }
     }
 
-    // Delete user's UserLists
+    // Delete user's UserLists and Friends
     await UserList.deleteMany({ creator: user });
+    await UserList.deleteUser(user);
+    await Friend.removeUser(user);
 
     // Delete media and comments under posts that will be deleted
     const deletedPosts = await Post.toBeDeleted(user);
@@ -89,8 +91,9 @@ class Routes {
   }
 
   @Router.get("/pendingPosts")
-  async getPendingPosts() {
-    const posts = await Post.getPendingPosts({});
+  async getPendingPosts(session: WebSessionDoc) {
+    const user = WebSession.getUser(session);
+    const posts = await Post.getPendingPostsByAuthor(user);
     return Responses.posts(posts);
   }
 
@@ -198,7 +201,7 @@ class Routes {
       }
     }
     await CommentSharing.limitSharing([author], comment.comment!._id, false, shareWithUserIds, shareWithListIds);
-    return comment;
+    return Responses.comment(comment.comment);
   }
 
   @Router.get("/posts/:_id/comments")
@@ -209,7 +212,7 @@ class Routes {
     const accessibleComments = await CommentSharing.getResourcesByAccessible(user, userLists);
     const accessibleCommentIds = accessibleComments.map((x) => x.resource);
     const comments = await Comment.getCommentsByTarget(_id, accessibleCommentIds);
-    return comments;
+    return Responses.comments(comments);
   }
 
   @Router.delete("/comments/:_id")
@@ -237,10 +240,16 @@ class Routes {
     return await Friend.removeFriend(user, friendId);
   }
 
-  @Router.get("/friend/requests")
-  async getRequests(session: WebSessionDoc) {
+  @Router.get("/friend/incomingRequests")
+  async getIncomingRequests(session: WebSessionDoc) {
     const user = WebSession.getUser(session);
-    return await Responses.friendRequests(await Friend.getRequests(user));
+    return await Responses.friendRequests(await Friend.getIncomingRequests(user));
+  }
+
+  @Router.get("/friend/outgoingRequests")
+  async getOutgoingRequests(session: WebSessionDoc) {
+    const user = WebSession.getUser(session);
+    return await Responses.friendRequests(await Friend.getOutgoingRequests(user));
   }
 
   @Router.post("/friend/requests/:to")
@@ -262,9 +271,9 @@ class Routes {
     const user = WebSession.getUser(session);
     const fromId = (await User.getUserByUsername(from))._id;
     const userListId = await UserList.nameToId("Friends", user);
-    await UserList.addToUserList(userListId, fromId);
+    await UserList.addToUserList(userListId, [fromId]);
     const friendUserListId = await UserList.nameToId("Friends", fromId);
-    await UserList.addToUserList(friendUserListId, user);
+    await UserList.addToUserList(friendUserListId, [user]);
     return await Friend.acceptRequest(fromId, user);
   }
 
@@ -299,14 +308,14 @@ class Routes {
   }
 
   @Router.post("/userLists/:_id/members")
-  async addToUserList(session: WebSessionDoc, _id: ObjectId, user: string) {
+  async addToUserList(session: WebSessionDoc, _id: ObjectId, users: Array<string>) {
     await UserList.isNotFriendList(_id);
     const creator = WebSession.getUser(session);
     await UserList.isCreator(creator, _id);
-    return await UserList.addToUserList(_id, (await User.getUserByUsername(user))._id);
+    return await UserList.addToUserList(_id, await User.usernamesToIds(users));
   }
 
-  @Router.delete("/userLists/:_id/members")
+  @Router.delete("/userLists/:_id/members/:user")
   async removeFromUserList(session: WebSessionDoc, _id: ObjectId, user: string) {
     await UserList.isNotFriendList(_id);
     const creator = WebSession.getUser(session);
@@ -336,7 +345,7 @@ class Routes {
     return await PostSharing.addUserAccess(_id, userID);
   }
 
-  @Router.delete("/sharing/posts/:_id/members")
+  @Router.delete("/sharing/posts/:_id/members/:user")
   async removeUserAccess(session: WebSessionDoc, _id: ObjectId, user: string) {
     const userID = (await User.getUserByUsername(user))._id;
     const owner = WebSession.getUser(session);
@@ -344,7 +353,7 @@ class Routes {
     return await PostSharing.removeUserAccess(_id, userID);
   }
 
-  @Router.post("/sharing/posts/:_id/lists")
+  @Router.post("/sharing/posts/:_id/lists/:list")
   async addListAccess(session: WebSessionDoc, _id: ObjectId, list: string) {
     const owner = WebSession.getUser(session);
     const listID = await UserList.nameToId(list, owner);

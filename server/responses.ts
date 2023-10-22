@@ -1,4 +1,5 @@
 import { PostMedia, User, UserList } from "./app";
+import { CommentDoc } from "./concepts/comment";
 import { AlreadyFriendsError, FriendNotFoundError, FriendRequestAlreadyExistsError, FriendRequestDoc, FriendRequestNotFoundError } from "./concepts/friend";
 import { PostAuthorNotMatchError, PostDoc } from "./concepts/post";
 import { SharingDoc } from "./concepts/sharing";
@@ -29,6 +30,25 @@ export default class Responses {
     const authors = await Promise.all(posts.map((post) => User.idsToUsernames(post.authors)));
     const contents = await Promise.all(posts.map((post) => PostMedia.getMedia(post.content)));
     return posts.map((post, i) => ({ ...post, content: contents[i], authors: authors[i] }));
+  }
+
+  /**
+   * Convert CommentDoc into more readable format for the frontend by converting the author ids into usernames.
+   */
+  static async comment(comment: CommentDoc | null) {
+    if (!comment) {
+      return comment;
+    }
+    const author = (await User.getUserById(comment.author)).username;
+    return { ...comment, author: author };
+  }
+
+  /**
+   * Same as {@link comment} but for an array of CommentDoc for improved performance.
+   */
+  static async comments(comments: CommentDoc[]) {
+    const authors = await User.idsToUsernames(comments.map((comment) => comment.author));
+    return comments.map((comment, i) => ({ ...comment, author: authors[i] }));
   }
 
   /**

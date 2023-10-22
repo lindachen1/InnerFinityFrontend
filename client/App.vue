@@ -4,6 +4,7 @@ import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 import { computed, onBeforeMount } from "vue";
 import { RouterLink, RouterView, useRoute } from "vue-router";
+import router from "./router";
 
 const currentRoute = useRoute();
 const currentRouteName = computed(() => currentRoute.name);
@@ -15,6 +16,10 @@ const { toast } = storeToRefs(useToastStore());
 onBeforeMount(async () => {
   try {
     await userStore.updateSession();
+
+    if (!isLoggedIn.value) {
+      await router.push({ name: "Login" });
+    }
   } catch {
     // User is not logged in
   }
@@ -23,7 +28,7 @@ onBeforeMount(async () => {
 
 <template>
   <header>
-    <nav>
+    <nav v-if="isLoggedIn">
       <div class="title">
         <img src="@/assets/images/logo.svg" />
         <RouterLink :to="{ name: 'Home' }">
@@ -40,8 +45,14 @@ onBeforeMount(async () => {
         <li>
           <RouterLink :to="{ name: 'Friends' }" :class="{ underline: currentRouteName == 'Friends' }"> Friends </RouterLink>
         </li>
+        <li>
+          <RouterLink :to="{ name: 'User Lists' }" :class="{ underline: currentRouteName == 'User Lists' }"> User Lists </RouterLink>
+        </li>
+        <li>
+          <RouterLink :to="{ name: 'Approve Posts' }" :class="{ underline: currentRouteName == 'Approve Posts' }"> Approve Posts </RouterLink>
+        </li>
         <li v-if="isLoggedIn">
-          <RouterLink :to="{ name: 'Settings' }" :class="{ underline: currentRouteName == 'Settings' }"> Settings </RouterLink>
+          <RouterLink :to="{ name: 'Profile' }" :class="{ underline: currentRouteName == 'Profile' }"> Profile </RouterLink>
         </li>
         <li v-else>
           <RouterLink :to="{ name: 'Login' }" :class="{ underline: currentRouteName == 'Login' }"> Login </RouterLink>
@@ -57,6 +68,12 @@ onBeforeMount(async () => {
 
 <style scoped>
 @import "./assets/toast.css";
+
+header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+}
 
 nav {
   padding: 1em 2em;

@@ -1,42 +1,33 @@
 <script setup lang="ts">
-import CommentComponent from "@/components/Comment/CommentListComponent.vue";
+import ApproveComponent from "@/components/Approve/ApproveComponent.vue";
 import PostComponent from "@/components/Post/PostComponent.vue";
 import { fetchy } from "@/utils/fetchy";
 import { onBeforeMount, ref } from "vue";
-import SearchPostForm from "./SearchPostForm.vue";
 
 const loaded = ref(false);
 let posts = ref<Array<Record<string, string>>>([]);
-let searchAuthor = ref("");
 
-async function getPosts(author?: string) {
-  let query: Record<string, string> = author !== undefined ? { author } : {};
+async function getPendingPosts() {
   let postResults;
   try {
-    postResults = await fetchy("/api/posts", "GET", { query });
+    postResults = await fetchy("/api/pendingPosts", "GET");
   } catch (_) {
     return;
   }
-  searchAuthor.value = author ? author : "";
   posts.value = postResults;
 }
 
 onBeforeMount(async () => {
-  await getPosts();
+  await getPendingPosts();
   loaded.value = true;
 });
 </script>
 
 <template>
-  <div class="row">
-    <h2 v-if="!searchAuthor">Posts:</h2>
-    <h2 v-else>Posts by {{ searchAuthor }}:</h2>
-    <SearchPostForm @getPostsByAuthor="getPosts" />
-  </div>
   <section class="posts" v-if="loaded && posts.length !== 0">
     <article v-for="post in posts" :key="post._id">
-      <PostComponent :post="post" @refreshPosts="getPosts" />
-      <CommentComponent :post="post" />
+      <PostComponent :post="post" @refreshPosts="getPendingPosts()" />
+      <ApproveComponent :post="post" @refreshPosts="getPendingPosts()" />
     </article>
   </section>
   <p v-else-if="loaded">No posts found</p>

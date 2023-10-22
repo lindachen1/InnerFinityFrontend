@@ -4,17 +4,30 @@ import { fetchy } from "../../utils/fetchy";
 
 const emit = defineEmits(["refreshFriends"]);
 const loaded = ref(false);
-let requests = ref<Array<Record<string, string>>>([]);
+let incomingRequests = ref<Array<Record<string, string>>>([]);
+let outgoingRequests = ref<Array<Record<string, string>>>([]);
 
-async function getFriendRequests() {
+async function getIncomingFriendRequests() {
   let requestResults;
   try {
-    requestResults = await fetchy(`/api/friend/requests`, "GET");
+    requestResults = await fetchy(`/api/friend/incomingRequests`, "GET");
   } catch {
     return;
   }
-  requests.value = requestResults;
+  incomingRequests.value = requestResults;
 }
+
+async function getOutgoingFriendRequests() {
+  let requestResults;
+  try {
+    requestResults = await fetchy(`/api/friend/outgoingRequests`, "GET");
+  } catch {
+    return;
+  }
+  outgoingRequests.value = requestResults;
+}
+
+defineExpose({ getOutgoingFriendRequests });
 
 async function acceptRequest(friend: string) {
   try {
@@ -23,7 +36,7 @@ async function acceptRequest(friend: string) {
     return;
   }
   emit("refreshFriends");
-  await getFriendRequests();
+  await getIncomingFriendRequests();
 }
 
 async function rejectRequest(friend: string) {
@@ -32,22 +45,38 @@ async function rejectRequest(friend: string) {
   } catch {
     return;
   }
-  await getFriendRequests();
+  await getIncomingFriendRequests();
+}
+
+async function removeRequest(friend: string) {
+  try {
+    await fetchy(`/api/friend/requests/${friend}`, "DELETE");
+  } catch {
+    return;
+  }
+  await getOutgoingFriendRequests();
 }
 
 onBeforeMount(async () => {
-  await getFriendRequests();
+  await getIncomingFriendRequests();
+  await getOutgoingFriendRequests();
   loaded.value = true;
 });
 </script>
 
 <template>
-  <h1>Friend Requests</h1>
   <section v-if="loaded">
-    <p v-for="request in requests" :key="request._id">
+    <h1>Incoming Friend Requests</h1>
+    <p v-for="request in incomingRequests" :key="request._id">
       {{ request.from }}
       <button @click="acceptRequest(request.from)">Accept</button>
       <button @click="rejectRequest(request.from)">Reject</button>
+    </p>
+
+    <h1>Outgoing Friend Requests</h1>
+    <p v-for="request in outgoingRequests" :key="request._id">
+      {{ request.to }}
+      <button @click="removeRequest(request.to)">Remove</button>
     </p>
   </section>
 </template>

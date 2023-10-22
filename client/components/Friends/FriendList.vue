@@ -7,6 +7,7 @@ import { fetchy } from "../../utils/fetchy";
 
 const loaded = ref(false);
 let friends = ref<Array<string>>([]);
+const requestChildComponent = ref<InstanceType<typeof FriendRequests> | null>(null);
 
 async function getFriends() {
   let friendResults;
@@ -16,6 +17,13 @@ async function getFriends() {
     return;
   }
   friends.value = friendResults;
+}
+
+async function refreshRequests() {
+  if (requestChildComponent.value) {
+    await requestChildComponent.value.getOutgoingFriendRequests();
+  }
+  return;
 }
 
 onBeforeMount(async () => {
@@ -32,10 +40,10 @@ onBeforeMount(async () => {
     </p>
   </section>
   <section class="addFriend">
-    <AddFriend />
+    <AddFriend @refreshRequests="refreshRequests" />
   </section>
   <section class="friendRequests">
-    <FriendRequests @refreshFriends="getFriends" />
+    <FriendRequests ref="requestChildComponent" @refreshFriends="getFriends" />
   </section>
 </template>
 

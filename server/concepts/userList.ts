@@ -36,7 +36,11 @@ export default class UserListConcept {
   }
 
   async editName(_id: ObjectId, name: string) {
-    const creator = (await this.userLists.readOne({ _id }))?.creator;
+    const list = await this.userLists.readOne({ _id });
+    if (list?.name === name) {
+      return { msg: "UserList name unchanged!" };
+    }
+    const creator = list?.creator;
     if (creator === undefined) {
       throw new UserListNotFoundError(_id);
     }
@@ -45,12 +49,15 @@ export default class UserListConcept {
     return { msg: "UserList name edited!" };
   }
 
-  async addToUserList(_id: ObjectId, user: ObjectId) {
+  async addToUserList(_id: ObjectId, users: Array<ObjectId>) {
+    if (users.length === 0) {
+      return { msg: "No members added!" };
+    }
     const UserList = await this.userLists.readOne({ _id });
     if (UserList === null) {
       throw new UserListNotFoundError(_id);
     }
-    await this.userLists.updateOneGeneral({ _id }, { $addToSet: { members: user } });
+    await this.userLists.updateOneGeneral({ _id }, { $addToSet: { members: { $each: users } } });
     return { msg: "UserList member added!" };
   }
 
@@ -91,9 +98,14 @@ export default class UserListConcept {
     return { msg: "UserLists deleted successfully" };
   }
 
+  async deleteUser(user: ObjectId) {
+    await this.userLists.updateMany({ members: user }, { $pull: { members: user } });
+    return { msg: "User removed from all user lists" };
+  }
+
   private async isNameUnique(creator: ObjectId, name: string) {
     if (await this.userLists.readOne({ name: name, creator: creator })) {
-      throw new NotAllowedError(`User ${creator} already has a User List with name ${name}!`);
+      throw new NotAllowedError(`Can not create a User List with duplicate name ${name}!`);
     }
   }
 
