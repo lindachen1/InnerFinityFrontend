@@ -32,6 +32,10 @@ async function removeMember(user: string) {
 }
 
 async function deleteList() {
+  var result = confirm("If you delete this list, users may lose access to posts that are shared to this list. Are you sure you want to delete this list?");
+  if (!result) {
+    return;
+  }
   try {
     await fetchy(`/api/userLists/${props.list._id}`, "DELETE");
   } catch (_) {
@@ -64,21 +68,25 @@ function toggleAddMembers() {
 
 <template>
   <section v-if="editing">
-    <button class="editButton" @click="editName(listName)">Done</button>
     <input class="name" type="text" v-model="listName" required />
+    <button class="pure-button-primary pure-button" @click="editName(listName)">done</button>
   </section>
-  <section v-else>
-    <button class="editButton" @click="toggleEditing">Edit</button>
+  <section v-else @click="toggleEditing" id="nameAndEdit">
     <span class="name">{{ listName }}</span>
+    <span class="material-symbols-outlined" style="padding-left: 0.5em">edit</span>
   </section>
 
   <div class="members">
-    <h3>Members:</h3>
-    <div v-for="member in listMembers" :key="member">
+    <h5><b>Members:</b></h5>
+    <div class="user" v-for="member in listMembers" :key="member">
       {{ member }}
-      <button @click="removeMember(member)">Remove</button>
+      <button class="button-error btn-small pure-button" @click="removeMember(member)">Remove</button>
     </div>
-    <button @click="toggleAddMembers">Add Members</button>
+  </div>
+
+  <div>
+    <button v-if="editingMembers" class="pure-button-primary pure-button" disabled="true">Add Members</button>
+    <button v-else class="pure-button-primary pure-button" @click="toggleAddMembers">Add Members</button>
     <EditMembers :members="listMembers" v-if="editingMembers" @addedMembers="addMembers" />
   </div>
 
@@ -88,17 +96,21 @@ function toggleAddMembers() {
 </template>
 
 <style scoped>
+#nameAndEdit:hover {
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 4px;
+}
+
+section {
+  width: fit-content;
+  display: flex;
+  align-items: center;
+}
+
 .name {
   font-size: 1.5em;
   font-weight: bold;
-}
-.editButton {
-  width: 4em;
-  margin-right: 1em;
-}
-
-.editMemberButton {
-  width: 12em;
 }
 
 menu {
@@ -108,5 +120,21 @@ menu {
   gap: 1em;
   padding: 0;
   margin: 0;
+}
+
+.members {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+.user {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.user:hover {
+  background-color: var(--light-blue);
 }
 </style>

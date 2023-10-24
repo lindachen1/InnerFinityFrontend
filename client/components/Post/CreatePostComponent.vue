@@ -188,15 +188,4 @@ b {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-.checkbox {
-  margin-right: 0.5em;
-}
-
-.checkboxLabel {
-  padding: 0.05em 0.3em;
-}
-.checkboxLabel:hover {
-  background-color: var(--light-blue);
-}
 </style>

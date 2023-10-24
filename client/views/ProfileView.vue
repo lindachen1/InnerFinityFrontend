@@ -48,16 +48,15 @@ async function delete_() {
 <template>
   <div class="row">
     <main class="col-md-4">
-      <div v-if="loaded" class="center">
+      <div class="center">
         <h1>{{ currentUsername }}</h1>
         <button class="pure-button pure-button-primary" @click="logout">Logout</button>
         <button class="button-error pure-button" @click="delete_">Delete User</button>
         <UpdateUserForm />
       </div>
-      <p v-else>Loading...</p>
     </main>
     <div class="column col-md-8 posts">
-      <h3 style="margin: 0; padding: 0">Your Posts</h3>
+      <h1 style="margin: 0; padding: 0">Your Posts</h1>
       <section class="posts" v-if="loaded && posts.length !== 0">
         <article v-for="post in posts" :key="post._id">
           <div class="row">

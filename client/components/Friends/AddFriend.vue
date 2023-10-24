@@ -25,22 +25,29 @@ async function search(user: string) {
 </script>
 
 <template>
-  <form @submit.prevent="search(user)" class="pure-form">
-    <label for="search">Username:</label>
-    <input id="search" type="text" v-model="user" placeholder="Username" required />
-    <button type="submit" @click="search(user)" class="pure-button pure-button-primary">Search</button>
-  </form>
-
-  <section class="addFriend" v-if="searchedUser">
-    <p>
-      {{ searchedUser }}
-      <button class="pure-button pure-button-primary" @click="requestFriend(searchedUser)">Request</button>
-    </p>
-  </section>
+  <main>
+    <form @submit.prevent="search(user)" class="pure-form">
+      <label for="search">Username:</label>
+      <div>
+        <input id="search" type="text" v-model="user" placeholder="Username" required />
+        <button type="submit" @click="search(user)" class="pure-button pure-button-primary">Search</button>
+      </div>
+    </form>
+    <section class="addFriend" v-if="searchedUser">
+      <p>{{ searchedUser }}</p>
+      <p><button class="pure-button pure-button-primary" @click="requestFriend(searchedUser)">Request</button></p>
+    </section>
+  </main>
   <hr />
 </template>
 
 <style scoped>
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 label {
   font-weight: bold;
 }
@@ -49,8 +56,18 @@ form {
   display: flex;
   width: 100%;
   justify-content: center;
-  gap: 0.5em;
+  gap: 1em;
   padding: 1em;
+  align-items: center;
+}
+
+section {
+  display: flex;
+  width: 28em;
+  padding: 1em 1em 0 1em;
+  background-color: var(--base-bg);
+  border-radius: 1em;
+  justify-content: space-between;
   align-items: center;
 }
 </style>

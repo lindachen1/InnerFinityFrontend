@@ -1,8 +1,8 @@
 /* Add some global styles here! */
 
 :root {
-  --red: rgb(208, 67, 12);
-  --green: #7C9958;
+  --red: #DD3B3B;
+  --green: #8DB956;
   --base-bg: #f1f3f5;
   --mid-blue: #88B2C2;
   --light-blue: #B9D2DA;
@@ -95,4 +95,19 @@ a.button {
   justify-content: flex-end;
   font-size: 0.9em;
   font-style: italic;
+}
+
+.checkbox {
+  margin-right: 0.5em;
+}
+
+.checkboxLabel {
+  padding: 0.05em 0.3em;
+}
+.checkboxLabel:hover {
+  background-color: var(--light-blue);
+}
+
+hr {
+  color: var(--dark-blue);
 }

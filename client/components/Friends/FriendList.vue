@@ -34,7 +34,7 @@ onBeforeMount(async () => {
 
 <template>
   <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-4 friends">
       <h1>Friends</h1>
       <article v-if="loaded">
         <p v-for="friend in friends" :key="friend">
@@ -42,12 +42,12 @@ onBeforeMount(async () => {
         </p>
       </article>
     </div>
-    <div class="col-md-6">
-      <section class="addFriend">
+    <div class="col-md-8">
+      <section>
         <h1>Add Friend</h1>
         <AddFriend @refreshRequests="refreshRequests" />
       </section>
-      <section class="friendRequests">
+      <section>
         <FriendRequests ref="requestChildComponent" @refreshFriends="getFriends" />
       </section>
     </div>
@@ -59,13 +59,20 @@ h1 {
   text-align: center;
 }
 
+.friends {
+  height: calc(100vh - 7em);
+  border-style: double;
+  border-width: 0 2px 0 0;
+  border-color: gray;
+}
+
 article {
   background-color: var(--base-bg);
   border-radius: 1em;
   display: flex;
   flex-direction: column;
-  padding: 1em;
-  margin: 1em;
+  padding: 1em 1em 0;
+  margin: 0 1em 0 0;
   max-height: 60vh;
   overflow-y: auto;
 }

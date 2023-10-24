@@ -83,7 +83,7 @@ export default class UserListConcept {
   async getMembers(_id: ObjectId) {
     const UserList = await this.userLists.readOne({ _id });
     if (UserList === null) {
-      throw new UserListNotFoundError(_id);
+      return [];
     }
     return UserList.members;
   }

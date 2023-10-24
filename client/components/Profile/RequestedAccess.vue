@@ -60,8 +60,8 @@ onBeforeMount(async () => {
     <div class="user">
       <span>{{ user }}</span>
       <span>
-        <button @click="addAccess(user)" class="approve"><span class="material-symbols-outlined">done</span></button>
-        <button @click="rejectAccess(user)" class="reject"><span class="material-symbols-outlined">close</span></button>
+        <button @click="addAccess(user)" class="button-success btn-small pure-button">Accept</button>
+        <button @click="rejectAccess(user)" class="button-error btn-small pure-button">Reject</button>
       </span>
     </div>
   </div>
@@ -72,7 +72,12 @@ onBeforeMount(async () => {
 .user {
   display: flex;
   flex-direction: row;
+  align-items: center;
   justify-content: space-between;
+}
+
+.user:hover {
+  background-color: var(--light-blue);
 }
 
 p {
@@ -81,24 +86,7 @@ p {
 }
 
 button {
-  width: 28px;
-  padding: 0;
-  border-radius: 50%;
   margin-left: 0.5em;
-}
-
-button:hover {
-  filter: brightness(0.8);
-}
-
-button:active {
-  border-radius: 50%;
-}
-
-button > * {
-  border-color: transparent;
-  border-radius: 16px;
-  padding: 0;
 }
 
 .approve {

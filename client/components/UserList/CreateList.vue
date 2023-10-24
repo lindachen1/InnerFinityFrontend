@@ -44,15 +44,22 @@ onBeforeMount(async () => {
 <template>
   <h1>Create New List</h1>
   <form @submit.prevent="createList(listName, listMembers)">
-    <label for="name">List Name:</label>
-    <input type="text" id="name" v-model="listName" placeholder="Enter a List Name!" required />
+    <div class="input">
+      <label for="name">List Name:</label>
+      <input type="text" id="name" v-model="listName" placeholder="Enter a List Name!" required />
+    </div>
 
     <section v-if="loaded">
-      <p>Choose members:</p>
-      <p v-if="friends.length === 0">No friends to choose from!</p>
-      <div v-for="user in friends" :key="user">
-        <input type="checkbox" :id="user" :value="user" v-model="listMembers" />
-        <label for="checkbox">{{ user }}</label>
+      <br />
+      <b>Choose members:</b>
+      <div class="list">
+        <p v-if="friends.length === 0">No friends to choose from!</p>
+        <div v-for="user in friends" :key="user">
+          <label class="checkboxLabel">
+            <input type="checkbox" class="checkbox" :id="user" :value="user" v-model="listMembers" />
+            {{ user }}
+          </label>
+        </div>
       </div>
     </section>
     <p v-else>Loading...</p>
@@ -61,4 +68,33 @@ onBeforeMount(async () => {
   </form>
 </template>
 
-<style scoped></style>
+<style scoped>
+.list {
+  max-height: 35vh;
+  overflow-y: auto;
+  background-color: white;
+  border-radius: 1em;
+  padding: 1em;
+  margin: 1em 0;
+}
+.input {
+  display: flex;
+}
+
+.input label {
+  width: 120px;
+}
+.input input {
+  flex: 1;
+}
+
+h1 {
+  text-align: center;
+}
+
+form {
+  background-color: var(--base-bg);
+  border-radius: 1em;
+  padding: 1em;
+}
+</style>

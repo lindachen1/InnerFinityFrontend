@@ -65,20 +65,61 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <section v-if="loaded">
-    <h1>Incoming Friend Requests</h1>
-    <p v-for="request in incomingRequests" :key="request._id">
-      {{ request.from }}
-      <button @click="acceptRequest(request.from)" class="button-success btn-small pure-button">Accept</button>
-      <button @click="rejectRequest(request.from)" class="button-error btn-small pure-button">Reject</button>
-    </p>
-
-    <h1>Outgoing Friend Requests</h1>
-    <p v-for="request in outgoingRequests" :key="request._id">
-      {{ request.to }}
-      <button @click="removeRequest(request.to)" class="button-error btn-small pure-button">Remove</button>
-    </p>
+  <section v-if="loaded" class="row">
+    <div class="col-md-6">
+      <h4>Incoming Requests</h4>
+      <article>
+        <span v-if="incomingRequests.length === 0">No requests!</span>
+        <div class="user" v-for="request in incomingRequests" :key="request._id">
+          <span>{{ request.from }}</span>
+          <span>
+            <button @click="acceptRequest(request.from)" class="button-success btn-small pure-button">Accept</button>
+            <button @click="rejectRequest(request.from)" class="button-error btn-small pure-button">Reject</button>
+          </span>
+        </div>
+      </article>
+    </div>
+    <div class="col-md-6">
+      <h4>Outgoing Requests</h4>
+      <article>
+        <span v-if="outgoingRequests.length === 0">No requests!</span>
+        <div class="user" v-for="request in outgoingRequests" :key="request._id">
+          <span>{{ request.to }}</span>
+          <button @click="removeRequest(request.to)" class="button-error btn-small pure-button">Remove</button>
+        </div>
+      </article>
+    </div>
   </section>
 </template>
 
-<style scoped></style>
+<style scoped>
+h4 {
+  text-align: center;
+}
+
+button {
+  margin-left: 1em;
+}
+
+article {
+  background-color: var(--base-bg);
+  border-radius: 1em;
+  display: flex;
+  flex-direction: column;
+  padding: 1em;
+  margin: 1em;
+  max-height: 35vh;
+  overflow-y: auto;
+  gap: 0.8em;
+}
+.user {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.user:hover {
+  background-color: var(--light-blue);
+}
+</style>

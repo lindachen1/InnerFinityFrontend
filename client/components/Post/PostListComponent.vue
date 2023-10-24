@@ -33,8 +33,8 @@ onBeforeMount(async () => {
   </div>
   <section class="posts" v-if="loaded && posts.length !== 0">
     <article v-for="post in posts" :key="post._id">
-      <div class="row">
-        <div class="col-md-6 post">
+      <div class="row" style="width: 100%">
+        <div class="col-md-6">
           <PostComponent :post="post" @refreshPosts="getPosts" />
         </div>
         <div class="col-md-6">
@@ -59,13 +59,6 @@ p,
 .row {
   margin: 0 auto;
   max-width: 60em;
-}
-
-.post {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
 }
 
 article {

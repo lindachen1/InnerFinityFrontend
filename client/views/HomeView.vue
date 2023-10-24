@@ -4,13 +4,8 @@ import PostListComponent from "@/components/Post/PostListComponent.vue";
 
 <template>
   <main>
-    <h1>Feed</h1>
     <PostListComponent />
   </main>
 </template>
 
-<style scoped>
-h1 {
-  text-align: center;
-}
-</style>
+<style scoped></style>

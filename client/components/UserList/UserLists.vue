@@ -24,18 +24,36 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <section class="lists" v-if="loaded">
-    <article v-for="list in lists" :key="list._id">
-      <ListComponent :list="list" @refreshLists="getLists" />
-    </article>
-  </section>
-
-  <CreateList @refreshLists="getLists" />
+  <div class="row">
+    <div class="col-md-6">
+      <div class="create">
+        <CreateList @refreshLists="getLists" />
+      </div>
+    </div>
+    <div class="col-md-6 side">
+      <section v-if="loaded">
+        <article v-for="list in lists" :key="list._id">
+          <ListComponent :list="list" @refreshLists="getLists" />
+        </article>
+      </section>
+    </div>
+  </div>
 </template>
 
 <style scoped>
-article {
+.create {
+  position: fixed;
+  width: 44vw;
+  left: 2em;
+}
+
+.side {
+  height: calc(100vh - 4em);
   background-color: var(--base-bg);
+}
+
+article {
+  background-color: white;
   border-radius: 1em;
   display: flex;
   flex-direction: column;

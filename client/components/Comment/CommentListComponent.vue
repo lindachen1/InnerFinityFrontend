@@ -41,31 +41,30 @@ onBeforeMount(async () => {
 
 <template>
   <h3>Comments</h3>
-  <section class="comments" v-if="loaded && comments.length !== 0">
-    <div v-for="comment in comments" :key="comment._id">
-      <span>
+  <section class="comments">
+    <div v-if="loaded && comments.length !== 0">
+      <div v-for="comment in comments" :key="comment._id">
         <b>{{ comment.author }}:</b> {{ comment.content }}
         <button class="button-error btn-small pure-button delete" v-if="currentUsername === comment.author" @click="deleteComment(comment._id)">Delete</button>
-      </span>
-      <hr style="margin-bottom: 0" />
+        <hr style="margin: 0.5em" />
+      </div>
     </div>
+    <p v-else-if="loaded">No comments yet!</p>
+    <p v-else>Loading...</p>
   </section>
-  <p v-else-if="loaded">No comments yet!</p>
-  <p v-else>Loading...</p>
 
   <CreateCommentComponent :post="props.post" @refreshComments="getComments" />
 </template>
 
 <style scoped>
 .comments {
+  background-color: white;
   display: flex;
   flex-direction: column;
   gap: 0.5em;
   max-height: 40vh;
   overflow-y: auto;
   padding: 0.5em;
-  border-style: solid;
-  border-width: 1px;
   border-radius: 4px;
 }
 

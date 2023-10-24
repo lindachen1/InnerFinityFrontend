@@ -29,14 +29,16 @@ onBeforeMount(async () => {
     <section v-if="loaded">
       <p v-if="friends.length === 0">No friends to choose from!</p>
       <div v-for="user in friends" :key="user">
-        <input v-if="props.members.includes(user)" type="checkbox" disabled="true" checked="true" />
-        <input v-else type="checkbox" :id="user" :value="user" v-model="added" />
-        <label for="checkbox">{{ user }}</label>
+        <label class="checkboxLabel">
+          <input class="checkbox" v-if="props.members.includes(user)" type="checkbox" disabled="true" checked="true" />
+          <input class="checkbox" v-else type="checkbox" :id="user" :value="user" v-model="added" />
+          {{ user }}
+        </label>
       </div>
     </section>
     <p v-else>Loading...</p>
 
-    <button type="submit">Confirm</button>
+    <button type="submit" class="pure-button-primary pure-button">Confirm</button>
   </form>
 </template>
 

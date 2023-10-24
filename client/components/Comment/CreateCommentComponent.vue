@@ -111,11 +111,17 @@ form {
   border-radius: 4px;
 }
 
+b {
+  font-size: 0.9em;
+}
 .list {
   max-height: 20vh;
   font-size: 0.8em;
   overflow-y: auto;
   margin-bottom: 0.5em;
+  background-color: white;
+  padding: 0.5em 0 0 0.5em;
+  border-radius: 0.5em;
 }
 
 .input {
@@ -126,17 +132,5 @@ form {
 
 #content {
   flex: 1;
-}
-
-.checkbox {
-  margin-right: 0.2em;
-  vertical-align: middle;
-}
-
-.checkboxLabel {
-  padding: 0.05em 0.3em;
-}
-.checkboxLabel:hover {
-  background-color: var(--light-blue);
 }
 </style>

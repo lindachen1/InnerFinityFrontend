@@ -4,7 +4,6 @@ import UserLists from "@/components/UserList/UserLists.vue";
 
 <template>
   <main>
-    <h1>User Lists</h1>
     <UserLists />
   </main>
 </template>
@@ -12,5 +11,10 @@ import UserLists from "@/components/UserList/UserLists.vue";
 <style scoped>
 h1 {
   text-align: center;
+}
+
+main {
+  height: 100%;
+  overflow-x: hidden;
 }
 </style>
