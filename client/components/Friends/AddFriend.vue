@@ -25,11 +25,10 @@ async function search(user: string) {
 </script>
 
 <template>
-  <h1>Add Friends</h1>
-  <form @submit.prevent="search(user)" class="search">
-    <legend>Username:</legend>
-    <input type="text" v-model="user" placeholder="Username" required />
-    <button type="submit" @click="search(user)">Search</button>
+  <form @submit.prevent="search(user)" class="pure-form">
+    <label for="search">Username:</label>
+    <input id="search" type="text" v-model="user" placeholder="Username" required />
+    <button type="submit" @click="search(user)" class="pure-button pure-button-primary">Search</button>
   </form>
 
   <section class="addFriend" v-if="searchedUser">
@@ -38,6 +37,20 @@ async function search(user: string) {
       <button class="pure-button pure-button-primary" @click="requestFriend(searchedUser)">Request</button>
     </p>
   </section>
+  <hr />
 </template>
 
-<style scoped></style>
+<style scoped>
+label {
+  font-weight: bold;
+}
+
+form {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  gap: 0.5em;
+  padding: 1em;
+  align-items: center;
+}
+</style>

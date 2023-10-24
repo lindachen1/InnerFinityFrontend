@@ -29,14 +29,18 @@ onBeforeMount(async () => {
 
 <template>
   <div class="row">
-    <h2 v-if="!searchAuthor">Posts:</h2>
-    <h2 v-else>Posts by {{ searchAuthor }}:</h2>
     <SearchPostForm @getPostsByAuthor="getPosts" />
   </div>
   <section class="posts" v-if="loaded && posts.length !== 0">
     <article v-for="post in posts" :key="post._id">
-      <PostComponent :post="post" @refreshPosts="getPosts" />
-      <CommentComponent :post="post" />
+      <div class="row">
+        <div class="col-md-6 post">
+          <PostComponent :post="post" @refreshPosts="getPosts" />
+        </div>
+        <div class="col-md-6">
+          <CommentComponent :post="post" />
+        </div>
+      </div>
     </article>
   </section>
   <p v-else-if="loaded">No posts found</p>
@@ -55,6 +59,13 @@ p,
 .row {
   margin: 0 auto;
   max-width: 60em;
+}
+
+.post {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 article {

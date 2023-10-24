@@ -10,7 +10,7 @@ let posts = ref<Array<Record<string, string>>>([]);
 async function getPendingPosts() {
   let postResults;
   try {
-    postResults = await fetchy("/api/pendingPosts", "GET");
+    postResults = await fetchy("/api/posts", "GET", { query: { type: "pending" } });
   } catch (_) {
     return;
   }
@@ -26,8 +26,14 @@ onBeforeMount(async () => {
 <template>
   <section class="posts" v-if="loaded && posts.length !== 0">
     <article v-for="post in posts" :key="post._id">
-      <PostComponent :post="post" @refreshPosts="getPendingPosts()" />
-      <ApproveComponent :post="post" @refreshPosts="getPendingPosts()" />
+      <div class="row">
+        <div class="col-md-6">
+          <PostComponent :post="post" @refreshPosts="getPendingPosts()" />
+        </div>
+        <div class="col-md-6">
+          <ApproveComponent :post="post" @refreshPosts="getPendingPosts()" />
+        </div>
+      </div>
     </article>
   </section>
   <p v-else-if="loaded">No posts found</p>

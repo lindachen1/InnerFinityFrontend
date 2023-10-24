@@ -47,6 +47,12 @@ export default class SharingConcept {
     return await this.sharedResources.deleteMany(filter);
   }
 
+  async removeRequest(_id: ObjectId, user: ObjectId) {
+    _id = new ObjectId(_id);
+    await this.sharedResources.updateOneGeneral({ resource: _id }, { $pull: { requestedAccess: user } });
+    return { msg: "Removed access request!" };
+  }
+
   async requestAccess(_id: ObjectId, user: ObjectId) {
     _id = new ObjectId(_id);
     const sharedResource = await this.sharedResources.readOne({ resource: _id });
@@ -126,6 +132,15 @@ export default class SharingConcept {
     await this.sharedResources.deleteMany({ owners: [user] });
     await this.sharedResources.updateMany({ owners: user }, { $pull: { owners: user } });
     return { msg: "Removed user's shared resources" };
+  }
+
+  async getResource(_id: ObjectId) {
+    _id = new ObjectId(_id);
+    const result = await this.sharedResources.readOne({ resource: _id });
+    if (result === null) {
+      throw new SharedResourceNotFoundError(_id);
+    }
+    return result;
   }
 
   async getResources(filter: Filter<SharingDoc>) {

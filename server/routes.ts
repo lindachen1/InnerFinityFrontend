@@ -90,33 +90,44 @@ class Routes {
     return { msg: "Logged out!" };
   }
 
-  @Router.get("/pendingPosts")
-  async getPendingPosts(session: WebSessionDoc) {
-    const user = WebSession.getUser(session);
-    const posts = await Post.getPendingPostsByAuthor(user);
-    return Responses.posts(posts);
-  }
-
   @Router.get("/posts")
-  async getAccessiblePosts(session: WebSessionDoc, author?: string) {
-    const user = WebSession.getUser(session);
-    const userLists = (await UserList.getUserListsByMember(user)).map((x) => x._id);
-    const resources = await PostSharing.getResourcesByAccessible(user, userLists);
-    const postIDs = resources.map((record) => record.resource);
-    let posts;
-    if (author) {
-      const authorId = (await User.getUserByUsername(author))._id;
-      posts = await Post.getPublishedPosts({ _id: { $in: postIDs }, authors: authorId });
+  async getPosts(session: WebSessionDoc, author?: string, type?: string) {
+    if (type && type === "hidden") {
+      return await getHiddenPosts(session);
+    } else if (type && type === "pending") {
+      return await getPendingPosts(session);
     } else {
-      posts = await Post.getPublishedPosts({ _id: { $in: postIDs } });
+      return await getAccessiblePosts(session, author);
     }
-    return Responses.posts(posts);
   }
 
   @Router.get("/sharing/posts")
   async getSharedPosts() {
     const resources = await PostSharing.getResources({});
     return Responses.sharedResources(resources);
+  }
+
+  @Router.get("/sharing/posts/:_id/members")
+  async getPostMembers(session: WebSessionDoc, _id: ObjectId) {
+    const user = WebSession.getUser(session);
+    await PostSharing.isOwner(user, _id);
+    const resource = await PostSharing.getResource(_id);
+    let withAccess = new Set(await User.idsToUsernames(resource.usersWithAccess));
+    for (const list of resource.listsWithAccess) {
+      const members = await User.idsToUsernames(await UserList.getMembers(list));
+      withAccess = new Set([...withAccess, ...members]);
+    }
+    withAccess.delete("DELETED_USER");
+    return Array.from(withAccess);
+  }
+
+  @Router.get("/sharing/posts/:_id/requesters")
+  async getPostRequesters(session: WebSessionDoc, _id: ObjectId) {
+    const user = WebSession.getUser(session);
+    await PostSharing.isOwner(user, _id);
+    const resource = await PostSharing.getResource(_id);
+    const requested = await User.idsToUsernames(resource.requestedAccess);
+    return requested.filter((user) => user !== "DELETED_USER");
   }
 
   @Router.post("/posts")
@@ -126,7 +137,7 @@ class Routes {
     caption: string,
     altText: string,
     authors: Array<string>,
-    allowRequests: string,
+    allowRequests: boolean,
     shareWithUsers: Array<string>,
     shareWithLists: Array<string>,
   ) {
@@ -142,7 +153,7 @@ class Routes {
     for (const listId of shareWithListIds) {
       await UserList.isCreator(user, listId);
     }
-    await PostSharing.limitSharing(authorIds, created.post!._id, allowRequests === "Y", shareWithUserIds, shareWithListIds);
+    await PostSharing.limitSharing(authorIds, created.post!._id, allowRequests, shareWithUserIds, shareWithListIds);
     return { msg: created.msg, post: await Responses.post(created.post) };
   }
 
@@ -337,6 +348,14 @@ class Routes {
     return await PostSharing.requestAccess(_id, user);
   }
 
+  @Router.delete("/sharing/posts/:_id/requests/:requester")
+  async rejectRequestAccess(session: WebSessionDoc, _id: ObjectId, requester: string) {
+    const user = WebSession.getUser(session);
+    await PostSharing.isOwner(user, _id);
+    const requesterId = (await User.getUserByUsername(requester))._id;
+    return await PostSharing.removeRequest(_id, requesterId);
+  }
+
   @Router.post("/sharing/posts/:_id/members")
   async addUserAccess(session: WebSessionDoc, _id: ObjectId, user: string) {
     const userID = (await User.getUserByUsername(user))._id;
@@ -350,7 +369,7 @@ class Routes {
     const userID = (await User.getUserByUsername(user))._id;
     const owner = WebSession.getUser(session);
     await PostSharing.isOwner(owner, _id);
-    return await PostSharing.removeUserAccess(_id, userID);
+    return await PostSharing.removeRequest(_id, userID);
   }
 
   @Router.post("/sharing/posts/:_id/lists/:list")
@@ -378,4 +397,33 @@ async function deleteCommentsUnderPost(postId: ObjectId) {
     await CommentSharing.deleteByResourceId(comment._id);
   }
   await Comment.deleteByTarget(postId);
+}
+
+async function getPendingPosts(session: WebSessionDoc) {
+  const user = WebSession.getUser(session);
+  const posts = await Post.getPendingPostsByAuthor(user);
+  return Responses.posts(posts);
+}
+
+async function getAccessiblePosts(session: WebSessionDoc, author?: string) {
+  const user = WebSession.getUser(session);
+  const userLists = (await UserList.getUserListsByMember(user)).map((x) => x._id);
+  const resources = await PostSharing.getResourcesByAccessible(user, userLists);
+  const postIDs = resources.map((record) => record.resource);
+  let posts;
+  if (author) {
+    const authorId = (await User.getUserByUsername(author))._id;
+    posts = await Post.getPublishedPosts({ _id: { $in: postIDs }, authors: authorId });
+  } else {
+    posts = await Post.getPublishedPosts({ _id: { $in: postIDs } });
+  }
+  return Responses.posts(posts);
+}
+
+async function getHiddenPosts(session: WebSessionDoc) {
+  const user = WebSession.getUser(session);
+  const friends = await Friend.getFriends(user);
+  const publishedIds = (await Post.getPublishedPosts({})).map((post) => post._id);
+  const hiddenResources = await PostSharing.getResources({ resource: { $in: publishedIds }, allowRequests: true, owners: { $in: friends }, usersWithAccess: { $ne: user } });
+  return Responses.sharedResources(hiddenResources);
 }

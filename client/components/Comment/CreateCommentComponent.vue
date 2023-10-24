@@ -58,62 +58,85 @@ onBeforeMount(async () => {
 
 <template>
   <form @submit.prevent="createComment(content, audience_users, audience_lists)">
-    <label for="content">Comment:</label>
-    <textarea id="content" v-model="content" placeholder="Enter comment content!" required> </textarea>
+    <div class="input">
+      <label for="content"><b>Comment:</b></label>
+      <input type="text" id="content" v-model="content" placeholder="Enter comment content!" required />
+    </div>
 
-    <section v-if="loaded">
-      <p>Choose audience (users):</p>
-      <p v-if="friends.length === 0">No friends to choose from!</p>
-      <div v-for="user in friends" :key="user">
-        <input type="checkbox" :id="user" :value="user" v-model="audience_users" />
-        <label for="checkbox">{{ user }}</label>
-      </div>
-    </section>
-
-    <section v-if="loaded">
-      <p>Choose audience (lists):</p>
-      <div v-for="list in lists" :key="list._id">
-        <input type="checkbox" :id="list._id" :value="list.name" v-model="audience_lists" />
-        <label for="checkbox">
-          {{ list.name }}
-          <div class="truncate">
-            {{ list.members.join(", ") }}
+    <div v-if="loaded" class="row">
+      <div class="col-md-6">
+        <b>Share with (users):</b>
+        <span class="tool-tip">
+          <span class="material-symbols-outlined" style="vertical-align: middle">info</span>
+          <span class="tool-tip-text">Comments must be viewable by the author(s) of the post. Only users who have access to the parent post <b>and</b> the comment can view your comment.</span>
+        </span>
+        <div class="list">
+          <p v-if="friends.length === 0">No friends to choose from!</p>
+          <div v-for="user in friends" :key="user">
+            <label class="checkboxLabel">
+              <input v-if="props.post.authors.includes(user)" class="checkbox" type="checkbox" disabled="true" checked="true" />
+              <input v-else type="checkbox" class="checkbox" :id="user" :value="user" v-model="audience_users" />
+              {{ user }}
+            </label>
           </div>
-        </label>
+        </div>
       </div>
-    </section>
+      <div class="col-md-6">
+        <b>Share with (lists):</b>
+        <span class="tool-tip">
+          <span class="material-symbols-outlined" style="vertical-align: middle">info</span>
+          <span class="tool-tip-text">Sharing permissions for this comment will be changed if the User List members are updated.</span>
+        </span>
+        <div class="list">
+          <div v-for="list in lists" :key="list._id">
+            <label class="checkboxLabel">
+              <input type="checkbox" class="checkbox" :id="list._id" :value="list.name" v-model="audience_lists" />
+              {{ list.name }}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <button type="submit" class="pure-button-primary pure-button">Post Comment</button>
+    <button type="submit" class="pure-button-primary pure-button btn-small">Post Comment</button>
   </form>
 </template>
 
 <style scoped>
 form {
-  background-color: var(--base-bg);
-  border-radius: 1em;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5em;
-  padding: 1em;
-  width: 80%;
-  margin: auto;
-}
-
-textarea {
-  font-family: inherit;
-  font-size: inherit;
-  height: 2em;
+  margin-top: 0.5em;
   padding: 0.5em;
+  border-style: solid;
+  border-width: 1px;
   border-radius: 4px;
-  resize: none;
 }
 
-.truncate {
-  display: inline-block;
-  font-size: 0.6em;
-  width: 50%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.list {
+  max-height: 20vh;
+  font-size: 0.8em;
+  overflow-y: auto;
+  margin-bottom: 0.5em;
+}
+
+.input {
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+}
+
+#content {
+  flex: 1;
+}
+
+.checkbox {
+  margin-right: 0.2em;
+  vertical-align: middle;
+}
+
+.checkboxLabel {
+  padding: 0.05em 0.3em;
+}
+.checkboxLabel:hover {
+  background-color: var(--light-blue);
 }
 </style>

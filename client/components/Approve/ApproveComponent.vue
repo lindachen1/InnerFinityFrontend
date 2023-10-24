@@ -20,6 +20,10 @@ async function approvePost() {
 }
 
 async function rejectPost() {
+  var result = confirm("Are you sure you want to reject this post? (Doing so will delete the post!)");
+  if (!result) {
+    return;
+  }
   try {
     await fetchy(`/api/posts/${props.post._id}/reject`, "PUT");
   } catch {
@@ -40,12 +44,25 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <p>{{ props.post.requiresApproval.length }} users still need to approve this post!</p>
-  <section v-if="requiresApproval">
-    <button @click="approvePost">Approve</button>
-    <button @click="rejectPost">Reject</button>
+  <section>
+    <p>{{ props.post.requiresApproval.length }} users still need to approve this post!</p>
+    <span v-if="requiresApproval">
+      <button @click="approvePost" class="button-success pure-button">Approve</button>
+      <button @click="rejectPost" class="button-error pure-button">Reject</button>
+    </span>
+    <p v-else>Approved!</p>
   </section>
-  <p v-else>Approved!</p>
 </template>
 
-<style scoped></style>
+<style scoped>
+section {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button {
+  margin: 1em;
+}
+</style>

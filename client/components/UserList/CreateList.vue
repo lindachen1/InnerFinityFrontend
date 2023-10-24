@@ -57,7 +57,7 @@ onBeforeMount(async () => {
     </section>
     <p v-else>Loading...</p>
 
-    <button type="submit">Create</button>
+    <button type="submit" class="pure-button-primary pure-button">Create</button>
   </form>
 </template>
 

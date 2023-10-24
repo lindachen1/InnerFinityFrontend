@@ -2,16 +2,39 @@
 
 :root {
   --red: rgb(208, 67, 12);
+  --green: #7C9958;
   --base-bg: #f1f3f5;
+  --mid-blue: #88B2C2;
+  --light-blue: #B9D2DA;
+  --semidark-blue: #457995;
+  --dark-blue: #375F74;
+}
+
+* {
+  font-family: "Montserrat", sans-serif;
+}
+
+h1 {
+  font-weight: 600;
 }
 
 button.btn-small {
   font-size: 80%;
 }
 
+button.button-submit {
+  color: white;
+  background: var(--semidark-blue);
+}
+
 button.button-error {
   color: white;
   background: var(--red);
+}
+
+button.button-success {
+  color: white;
+  background: var(--green);
 }
 
 a.button {
@@ -29,4 +52,47 @@ a.button {
   justify-content: center;
   align-items: center;
   gap: 1em;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+  vertical-align:middle;
+}
+
+.tool-tip {
+  position: relative;
+}
+
+.tool-tip .tool-tip-text {
+  font-size: 0.8em;
+  visibility: hidden;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+
+  width: 300px;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -150px;
+}
+
+.tool-tip:hover .tool-tip-text {
+  visibility: visible;
+}
+
+.timestamp {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 0.9em;
+  font-style: italic;
 }

@@ -5,6 +5,7 @@ import { useUserStore } from "@/stores/user";
 import ApprovePostsView from "../views/ApprovePostsView.vue";
 import CreatePostView from "../views/CreatePostView.vue";
 import FriendsView from "../views/FriendsView.vue";
+import HiddenPostsView from "../views/HiddenPostsView.vue";
 import HomeView from "../views/HomeView.vue";
 import ListsView from "../views/ListsView.vue";
 import LoginView from "../views/LoginView.vue";
@@ -18,6 +19,11 @@ const router = createRouter({
       path: "/",
       name: "Home",
       component: HomeView,
+    },
+    {
+      path: "/hidden",
+      name: "Hidden Posts",
+      component: HiddenPostsView,
     },
     {
       path: "/post",

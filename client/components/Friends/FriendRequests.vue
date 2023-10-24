@@ -69,14 +69,14 @@ onBeforeMount(async () => {
     <h1>Incoming Friend Requests</h1>
     <p v-for="request in incomingRequests" :key="request._id">
       {{ request.from }}
-      <button @click="acceptRequest(request.from)">Accept</button>
-      <button @click="rejectRequest(request.from)">Reject</button>
+      <button @click="acceptRequest(request.from)" class="button-success btn-small pure-button">Accept</button>
+      <button @click="rejectRequest(request.from)" class="button-error btn-small pure-button">Reject</button>
     </p>
 
     <h1>Outgoing Friend Requests</h1>
     <p v-for="request in outgoingRequests" :key="request._id">
       {{ request.to }}
-      <button @click="removeRequest(request.to)">Remove</button>
+      <button @click="removeRequest(request.to)" class="button-error btn-small pure-button">Remove</button>
     </p>
   </section>
 </template>

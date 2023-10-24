@@ -30,36 +30,71 @@ onBeforeMount(async () => {
   <header>
     <nav v-if="isLoggedIn">
       <div class="title">
-        <img src="@/assets/images/logo.svg" />
+        <span class="material-symbols-outlined" style="font-size: 3em">all_inclusive</span>
         <RouterLink :to="{ name: 'Home' }">
           <h1>InnerFinity</h1>
         </RouterLink>
       </div>
       <ul>
-        <li>
-          <RouterLink :to="{ name: 'Home' }" :class="{ underline: currentRouteName == 'Home' }"> Home </RouterLink>
+        <li :class="{ underline: currentRouteName == 'Home' }">
+          <RouterLink :to="{ name: 'Home' }">
+            <div>
+              <span class="material-symbols-outlined">Home</span>
+              <p>Feed</p>
+            </div>
+          </RouterLink>
         </li>
-        <li>
-          <RouterLink :to="{ name: 'Post' }" :class="{ underline: currentRouteName == 'Post' }"> Post </RouterLink>
+        <li :class="{ underline: currentRouteName == 'Post' }">
+          <RouterLink :to="{ name: 'Post' }">
+            <div>
+              <span class="material-symbols-outlined">post_add</span>
+              <p>Post</p>
+            </div>
+          </RouterLink>
         </li>
-        <li>
-          <RouterLink :to="{ name: 'Friends' }" :class="{ underline: currentRouteName == 'Friends' }"> Friends </RouterLink>
+        <li :class="{ underline: currentRouteName == 'Approve Posts' }">
+          <RouterLink :to="{ name: 'Approve Posts' }">
+            <div>
+              <span class="material-symbols-outlined">rule</span>
+              <p>Approve</p>
+            </div>
+          </RouterLink>
         </li>
-        <li>
-          <RouterLink :to="{ name: 'User Lists' }" :class="{ underline: currentRouteName == 'User Lists' }"> User Lists </RouterLink>
+        <li :class="{ underline: currentRouteName == 'Friends' }">
+          <RouterLink :to="{ name: 'Friends' }">
+            <div>
+              <span class="material-symbols-outlined">group</span>
+              <p>Friends</p>
+            </div>
+          </RouterLink>
         </li>
-        <li>
-          <RouterLink :to="{ name: 'Approve Posts' }" :class="{ underline: currentRouteName == 'Approve Posts' }"> Approve Posts </RouterLink>
+        <li :class="{ underline: currentRouteName == 'User Lists' }">
+          <RouterLink :to="{ name: 'User Lists' }">
+            <div>
+              <span class="material-symbols-outlined">patient_list</span>
+              <p>Lists</p>
+            </div>
+          </RouterLink>
         </li>
-        <li v-if="isLoggedIn">
-          <RouterLink :to="{ name: 'Profile' }" :class="{ underline: currentRouteName == 'Profile' }"> Profile </RouterLink>
+        <li :class="{ underline: currentRouteName == 'Hidden Posts' }">
+          <RouterLink :to="{ name: 'Hidden Posts' }">
+            <div>
+              <span class="material-symbols-outlined">lock</span>
+              <p>Hidden</p>
+            </div>
+          </RouterLink>
         </li>
-        <li v-else>
-          <RouterLink :to="{ name: 'Login' }" :class="{ underline: currentRouteName == 'Login' }"> Login </RouterLink>
+        <li :class="{ underline: currentRouteName == 'Profile' }">
+          <RouterLink :to="{ name: 'Profile' }">
+            <div>
+              <span class="material-symbols-outlined">account_circle</span>
+              <p>Profile</p>
+            </div>
+          </RouterLink>
         </li>
       </ul>
     </nav>
-    <article v-if="toast !== null" class="toast" :class="toast.style">
+    <article v-if="toast !== null" class="toast-custom" :class="toast.style">
       <p>{{ toast.message }}</p>
     </article>
   </header>
@@ -69,15 +104,37 @@ onBeforeMount(async () => {
 <style scoped>
 @import "./assets/toast.css";
 
+p {
+  margin: 0;
+  font-size: 0.8em;
+}
+
+li {
+  width: 4em;
+  text-align: center;
+}
+
+li:hover {
+  background-color: var(--mid-blue);
+}
+
+.underline {
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--dark-blue);
+  background-color: var(--mid-blue);
+}
+
 header {
   position: sticky;
   top: 0;
   width: 100%;
+  z-index: 1;
 }
 
 nav {
-  padding: 1em 2em;
-  background-color: lightgray;
+  padding: 0em 2em;
+  background-color: var(--light-blue);
   display: flex;
   align-items: center;
 }
@@ -110,9 +167,7 @@ ul {
   align-items: center;
   flex-direction: row;
   gap: 1em;
-}
-
-.underline {
-  text-decoration: underline;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
 }
 </style>

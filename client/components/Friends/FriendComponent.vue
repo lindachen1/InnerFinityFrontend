@@ -15,8 +15,20 @@ async function removeFriend(friend: string) {
 </script>
 
 <template>
-  {{ props.friend }}
-  <button @click="removeFriend(props.friend)">Remove</button>
+  <section>
+    {{ props.friend }}
+    <button @click="removeFriend(props.friend)" class="button-error btn-small pure-button">Remove</button>
+  </section>
 </template>
 
-<style scoped></style>
+<style scoped>
+section {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+section:hover {
+  background-color: var(--light-blue);
+}
+</style>

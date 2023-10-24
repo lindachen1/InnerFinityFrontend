@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { fetchy } from "@/utils/fetchy";
-import { onBeforeMount, ref } from "vue";
 import { useUserStore } from "@/stores/user";
-import { formatDate } from "@/utils/formatDate";
+import { fetchy } from "@/utils/fetchy";
 import { storeToRefs } from "pinia";
+import { onBeforeMount, ref } from "vue";
 import CreateCommentComponent from "./CreateCommentComponent.vue";
 
 const loaded = ref(false);
@@ -22,6 +21,10 @@ async function getComments() {
 }
 
 async function deleteComment(commentId: string) {
+  var result = confirm("Are you sure you want to delete this comment? (Deleting is irreversible!)");
+  if (!result) {
+    return;
+  }
   try {
     await fetchy(`/api/comments/${commentId}`, "DELETE");
   } catch (_) {
@@ -37,20 +40,14 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <h1>Comments</h1>
+  <h3>Comments</h3>
   <section class="comments" v-if="loaded && comments.length !== 0">
     <div v-for="comment in comments" :key="comment._id">
       <span>
         <b>{{ comment.author }}:</b> {{ comment.content }}
+        <button class="button-error btn-small pure-button delete" v-if="currentUsername === comment.author" @click="deleteComment(comment._id)">Delete</button>
       </span>
-      <div class="base">
-        <menu v-if="comment.author === currentUsername">
-          <li><button class="button-error btn-small pure-button" @click="deleteComment(comment._id)">Delete</button></li>
-        </menu>
-        <article class="timestamp">
-          <p>Created on: {{ formatDate(comment.dateCreated) }}</p>
-        </article>
-      </div>
+      <hr style="margin-bottom: 0" />
     </div>
   </section>
   <p v-else-if="loaded">No comments yet!</p>
@@ -60,51 +57,19 @@ onBeforeMount(async () => {
 </template>
 
 <style scoped>
-section {
+.comments {
   display: flex;
   flex-direction: column;
-  gap: 1em;
+  gap: 0.5em;
+  max-height: 40vh;
+  overflow-y: auto;
+  padding: 0.5em;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 4px;
 }
 
-section,
-p,
-.row {
-  margin: 0 auto;
-  max-width: 60em;
-}
-.posts {
-  padding: 1em;
-}
-
-.row {
-  display: flex;
-  justify-content: space-between;
-  margin: 0 auto;
-  max-width: 60em;
-}
-menu {
-  list-style-type: none;
-  display: flex;
-  flex-direction: row;
-  gap: 1em;
-  padding: 0;
-  margin: 0;
-}
-
-.timestamp {
-  display: flex;
-  justify-content: flex-end;
-  font-size: 0.9em;
-  font-style: italic;
-}
-
-.base {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.base article:only-child {
-  margin-left: auto;
+.delete {
+  float: right;
 }
 </style>

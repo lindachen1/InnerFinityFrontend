@@ -63,49 +63,77 @@ onBeforeMount(async () => {
 
 <template>
   <form @submit.prevent="createPost(imageURL, caption, altText, authors, allowRequests, audience_users, audience_lists)">
-    <label for="image">Post Image:</label>
-    <input type="url" id="image" v-model="imageURL" placeholder="Enter an image URL!" required />
+    <div class="input">
+      <label for="image">Post Image:</label>
+      <input type="url" id="image" v-model="imageURL" placeholder="Enter an image URL!" required />
+    </div>
 
-    <label for="caption">Post Caption:</label>
-    <textarea id="caption" v-model="caption" placeholder="Enter a caption!" required> </textarea>
+    <div class="input">
+      <label for="caption">Post Caption:</label>
+      <input type="text" id="caption" v-model="caption" placeholder="Enter a caption!" required />
+    </div>
 
-    <label for="altText">Alt Text:</label>
-    <textarea id="altText" v-model="altText" placeholder="Enter alt text for the image!" required> </textarea>
-
-    <section v-if="loaded">
-      <p>Choose authors (select none for individual post):</p>
-      <p v-if="friends.length === 0">No friends to choose from!</p>
-      <div v-for="user in friends" :key="user">
-        <input type="checkbox" :id="user" :value="user" v-model="authors" />
-        <label for="checkbox">{{ user }}</label>
-      </div>
-    </section>
+    <div class="input">
+      <label for="altText">Alt Text:</label>
+      <input type="text" id="altText" v-model="altText" placeholder="Enter alt text for the image!" required />
+    </div>
 
     <section v-if="loaded">
-      <p>Choose audience (users):</p>
-      <p v-if="friends.length === 0">No friends to choose from!</p>
-      <div v-for="user in friends" :key="user">
-        <input type="checkbox" :id="user" :value="user" v-model="audience_users" />
-        <label for="checkbox">{{ user }}</label>
-      </div>
-    </section>
-
-    <section v-if="loaded">
-      <p>Choose audience (lists):</p>
-      <div v-for="list in lists" :key="list._id">
-        <input type="checkbox" :id="list._id" :value="list.name" v-model="audience_lists" />
-        <label for="checkbox">
-          {{ list.name }}
-          <div class="truncate">
-            {{ list.members.join(", ") }}
+      <div class="row">
+        <div class="col-md-6">
+          <b>Choose authors (select none for individual post):</b>
+          <div class="list">
+            <p v-if="friends.length === 0">No friends to choose from!</p>
+            <div v-for="user in friends" :key="user">
+              <label class="checkboxLabel">
+                <input type="checkbox" class="checkbox" :id="user" :value="user" v-model="authors" />
+                {{ user }}
+              </label>
+            </div>
           </div>
-        </label>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <b>Choose audience (users):</b>
+          <div class="list">
+            <p v-if="friends.length === 0">No friends to choose from!</p>
+            <div v-for="user in friends" :key="user">
+              <label class="checkboxLabel">
+                <input type="checkbox" class="checkbox" :id="user" :value="user" v-model="audience_users" />
+                {{ user }}
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <b>Choose audience (lists):</b>
+          <span class="tool-tip">
+            <span class="material-symbols-outlined" style="vertical-align: middle">info</span>
+            <span class="tool-tip-text">Sharing permissions for this comment will be changed if the User List members are updated.</span>
+          </span>
+          <div class="list">
+            <div v-for="list in lists" :key="list._id">
+              <div class="listItem">
+                <label class="checkboxLabel">
+                  <input type="checkbox" class="checkbox" :id="list._id" :value="list.name" v-model="audience_lists" />
+                  {{ list.name }}
+                  <span class="truncate">{{ list.members.join(", ") }}</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
     <section>
-      <input type="checkbox" v-model="allowRequests" />
-      <label for="checkbox">Show as hidden post to all other users.</label>
+      <label class="checkboxLabel">
+        <input type="checkbox" v-model="allowRequests" />
+        Show as hidden post to all other friends.
+      </label>
     </section>
 
     <button type="submit" class="pure-button-primary pure-button">Create Post</button>
@@ -113,6 +141,15 @@ onBeforeMount(async () => {
 </template>
 
 <style scoped>
+.list {
+  max-height: 30vh;
+  overflow-y: auto;
+  background-color: white;
+  border-radius: 1em;
+  padding: 1em;
+  margin: 1em 0;
+}
+
 form {
   background-color: var(--base-bg);
   border-radius: 1em;
@@ -124,21 +161,42 @@ form {
   margin: auto;
 }
 
-textarea {
-  font-family: inherit;
-  font-size: inherit;
-  height: 2em;
-  padding: 0.5em;
-  border-radius: 4px;
-  resize: none;
+b {
+  margin-right: 0.5em;
 }
 
+.input {
+  display: flex;
+}
+
+.input label {
+  width: 120px;
+}
+.input input {
+  flex: 1;
+}
+
+.listItem {
+  display: flex;
+}
 .truncate {
   display: inline-block;
-  font-size: 0.6em;
-  width: 50%;
+  vertical-align: middle;
+  font-size: 0.8em;
+  max-width: 28vw;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.checkbox {
+  margin-right: 0.5em;
+}
+
+.checkboxLabel {
+  padding: 0.05em 0.3em;
+}
+.checkboxLabel:hover {
+  background-color: var(--light-blue);
 }
 </style>

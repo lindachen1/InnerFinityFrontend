@@ -33,18 +33,40 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <h1>Friends</h1>
-  <section class="friends" v-if="loaded">
-    <p v-for="friend in friends" :key="friend">
-      <FriendComponent :friend="friend" @refreshFriends="getFriends" />
-    </p>
-  </section>
-  <section class="addFriend">
-    <AddFriend @refreshRequests="refreshRequests" />
-  </section>
-  <section class="friendRequests">
-    <FriendRequests ref="requestChildComponent" @refreshFriends="getFriends" />
-  </section>
+  <div class="row">
+    <div class="col-md-6">
+      <h1>Friends</h1>
+      <article v-if="loaded">
+        <p v-for="friend in friends" :key="friend">
+          <FriendComponent :friend="friend" @refreshFriends="getFriends" />
+        </p>
+      </article>
+    </div>
+    <div class="col-md-6">
+      <section class="addFriend">
+        <h1>Add Friend</h1>
+        <AddFriend @refreshRequests="refreshRequests" />
+      </section>
+      <section class="friendRequests">
+        <FriendRequests ref="requestChildComponent" @refreshFriends="getFriends" />
+      </section>
+    </div>
+  </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+h1 {
+  text-align: center;
+}
+
+article {
+  background-color: var(--base-bg);
+  border-radius: 1em;
+  display: flex;
+  flex-direction: column;
+  padding: 1em;
+  margin: 1em;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+</style>
