@@ -107,7 +107,7 @@ onBeforeMount(async () => {
           <b>Choose audience (lists):</b>
           <span class="tool-tip">
             <span class="material-symbols-outlined" style="vertical-align: middle">info</span>
-            <span class="tool-tip-text">Sharing permissions for this comment will be changed if the User List members are updated.</span>
+            <span class="tool-tip-text">Sharing permissions for this post will be changed if the User List members are updated.</span>
           </span>
           <div class="list">
             <div v-for="list in lists" :key="list._id">
