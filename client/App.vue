@@ -76,8 +76,8 @@ onBeforeMount(async () => {
             </div>
           </RouterLink>
         </li>
-        <li :class="{ underline: currentRouteName == 'Approve Posts' }">
-          <RouterLink :to="{ name: 'Approve Posts' }">
+        <li :class="{ underline: currentRouteName == 'Approve' }">
+          <RouterLink :to="{ path: '/approve/access' }">
             <div>
               <span class="material-symbols-outlined">rule</span>
               <p>Approve</p>

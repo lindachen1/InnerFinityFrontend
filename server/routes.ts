@@ -92,12 +92,14 @@ class Routes {
 
   @Router.get("/posts")
   async getPosts(session: WebSessionDoc, author?: string, type?: string) {
-    if (type && type === "hidden") {
-      return await getHiddenPosts(session);
-    } else if (type && type === "pending") {
-      return await getPendingPosts(session);
-    } else {
+    if (!type) {
       return await getAccessiblePosts(session, author);
+    } else if (type === "myHidden") {
+      return await getMyHiddenPosts(session);
+    } else if (type === "hidden") {
+      return await getHiddenPosts(session);
+    } else if (type === "pending") {
+      return await getPendingPosts(session);
     }
   }
 
@@ -424,6 +426,20 @@ async function getHiddenPosts(session: WebSessionDoc) {
   const user = WebSession.getUser(session);
   const friends = await Friend.getFriends(user);
   const publishedIds = (await Post.getPublishedPosts({})).map((post) => post._id);
-  const hiddenResources = await PostSharing.getResources({ resource: { $in: publishedIds }, allowRequests: true, owners: { $in: friends }, usersWithAccess: { $ne: user } });
+  const lists = (await UserList.getUserListsByMember(user)).map((list) => list._id);
+  const hiddenResources = await PostSharing.getResources({
+    resource: { $in: publishedIds },
+    allowRequests: true,
+    owners: { $in: friends },
+    usersWithAccess: { $ne: user },
+    listsWithAccess: { $nin: lists },
+  });
   return Responses.sharedResources(hiddenResources);
+}
+
+async function getMyHiddenPosts(session: WebSessionDoc) {
+  const user = WebSession.getUser(session);
+  const resourceIds = (await PostSharing.getResources({ owners: user, allowRequests: true })).map((resource) => resource.resource);
+  const posts = await Post.getPublishedPosts({ _id: { $in: resourceIds } });
+  return Responses.posts(posts);
 }

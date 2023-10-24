@@ -41,9 +41,10 @@ const router = createRouter({
       component: ListsView,
     },
     {
-      path: "/approve",
-      name: "Approve Posts",
+      path: "/approve/:view",
+      name: "Approve",
       component: ApprovePostsView,
+      props: true,
     },
     {
       path: "/settings",

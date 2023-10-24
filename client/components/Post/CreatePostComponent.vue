@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from "vue";
+import router from "../../router";
 import { fetchy } from "../../utils/fetchy";
 
 const imageURL = ref("");
@@ -41,17 +42,11 @@ const createPost = async (imageURL: string, caption: string, altText: string, au
   } catch (_) {
     return;
   }
-  emptyForm();
-};
-
-const emptyForm = () => {
-  imageURL.value = "";
-  caption.value = "";
-  altText.value = "";
-  authors.value = [];
-  allowRequests.value = false;
-  audience_users.value = [];
-  audience_lists.value = [];
+  if (authors.length === 0) {
+    void router.push({ name: "Home" });
+  } else {
+    void router.push({ name: "Approve", params: { view: "group" } });
+  }
 };
 
 onBeforeMount(async () => {

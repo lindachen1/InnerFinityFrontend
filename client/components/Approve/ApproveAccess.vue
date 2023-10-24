@@ -1,17 +1,14 @@
 <script setup lang="ts">
 import RequestedAccess from "@/components/Approve/RequestedAccess.vue";
 import PostComponent from "@/components/Post/PostComponent.vue";
-import { storeToRefs } from "pinia";
 import { onBeforeMount, ref } from "vue";
-import { useUserStore } from "../../stores/user";
 import { fetchy } from "../../utils/fetchy";
 
-const { currentUsername } = storeToRefs(useUserStore());
 const loaded = ref(false);
 let posts = ref<Array<Record<string, string>>>([]);
 
 async function getPosts() {
-  let query: Record<string, string> = { author: currentUsername.value };
+  let query: Record<string, string> = { type: "myHidden" };
   let postResults;
   try {
     postResults = await fetchy("/api/posts", "GET", { query });

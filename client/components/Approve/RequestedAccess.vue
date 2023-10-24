@@ -56,13 +56,15 @@ onBeforeMount(async () => {
 
 <template>
   <div v-if="requesters.length === 0">No users have requested access!</div>
-  <div v-for="user in requesters" :key="user">
-    <div class="user">
-      <span>{{ user }}</span>
-      <span>
-        <button @click="addAccess(user)" class="button-success btn-small pure-button">Accept</button>
-        <button @click="rejectAccess(user)" class="button-error btn-small pure-button">Reject</button>
-      </span>
+  <div class="user-wrapper">
+    <div v-for="user in requesters" :key="user">
+      <div class="user">
+        <span>{{ user }}</span>
+        <span>
+          <button @click="addAccess(user)" class="button-success btn-small pure-button">Accept</button>
+          <button @click="rejectAccess(user)" class="button-error btn-small pure-button">Reject</button>
+        </span>
+      </div>
     </div>
   </div>
   <p><b>Users with access:</b> {{ sharedWith.join(", ") }}</p>
@@ -78,6 +80,12 @@ onBeforeMount(async () => {
 
 .user:hover {
   background-color: var(--light-blue);
+}
+
+.user-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
 }
 
 p {
