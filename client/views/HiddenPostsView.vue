@@ -7,7 +7,7 @@ import router from "@/router";
   <main>
     <h1>Hidden Posts</h1>
     <p>Request access to hidden posts to notify the author(s) of your request. Once the author(s) approve your request, you will be able to see the post!</p>
-    <p class="link" @click="router.push('/profile')">Approve/deny access requests on your posts</p>
+    <p class="link" @click="router.push('/approve')">Approve/deny access requests on your posts</p>
     <HiddenPostList />
   </main>
 </template>

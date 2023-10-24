@@ -1,16 +1,20 @@
 <script setup lang="ts">
-import ApproveComponent from "@/components/Approve/ApproveComponent.vue";
+import RequestedAccess from "@/components/Approve/RequestedAccess.vue";
 import PostComponent from "@/components/Post/PostComponent.vue";
-import { fetchy } from "@/utils/fetchy";
+import { storeToRefs } from "pinia";
 import { onBeforeMount, ref } from "vue";
+import { useUserStore } from "../../stores/user";
+import { fetchy } from "../../utils/fetchy";
 
+const { currentUsername } = storeToRefs(useUserStore());
 const loaded = ref(false);
 let posts = ref<Array<Record<string, string>>>([]);
 
-async function getPendingPosts() {
+async function getPosts() {
+  let query: Record<string, string> = { author: currentUsername.value };
   let postResults;
   try {
-    postResults = await fetchy("/api/posts", "GET", { query: { type: "pending" } });
+    postResults = await fetchy("/api/posts", "GET", { query });
   } catch (_) {
     return;
   }
@@ -18,7 +22,7 @@ async function getPendingPosts() {
 }
 
 onBeforeMount(async () => {
-  await getPendingPosts();
+  await getPosts();
   loaded.value = true;
 });
 </script>
@@ -28,10 +32,11 @@ onBeforeMount(async () => {
     <article v-for="post in posts" :key="post._id">
       <div class="row">
         <div class="col-md-6">
-          <PostComponent :post="post" @refreshPosts="getPendingPosts()" />
+          <PostComponent :post="post" :hideAccess="true" @refreshPosts="getPosts" />
         </div>
         <div class="col-md-6">
-          <ApproveComponent :post="post" @refreshPosts="getPendingPosts()" />
+          <h5>Requested Access:</h5>
+          <RequestedAccess :post="post" />
         </div>
       </div>
     </article>
@@ -59,16 +64,12 @@ article {
   display: flex;
   flex-direction: column;
   gap: 0.5em;
-  padding: 1em;
-}
-
-.posts {
-  padding: 1em;
+  padding: 1em 0;
 }
 
 .row {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   margin: 0 auto;
   width: 60em;
 }

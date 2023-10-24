@@ -48,7 +48,7 @@ onBeforeMount(async () => {
 }
 
 .side {
-  height: calc(100vh - 4em);
+  min-height: calc(100vh - 4em);
   background-color: var(--base-bg);
 }
 

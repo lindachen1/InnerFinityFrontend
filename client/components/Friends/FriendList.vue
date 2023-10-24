@@ -37,6 +37,7 @@ onBeforeMount(async () => {
     <div class="col-md-4 friends">
       <h1>Friends</h1>
       <article v-if="loaded">
+        <p v-if="friends.length === 0">No friends yet!</p>
         <p v-for="friend in friends" :key="friend">
           <FriendComponent :friend="friend" @refreshFriends="getFriends" />
         </p>

@@ -10,7 +10,7 @@ import HomeView from "../views/HomeView.vue";
 import ListsView from "../views/ListsView.vue";
 import LoginView from "../views/LoginView.vue";
 import NotFoundView from "../views/NotFoundView.vue";
-import ProfileView from "../views/ProfileView.vue";
+import SettingsView from "../views/SettingsView.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -46,9 +46,9 @@ const router = createRouter({
       component: ApprovePostsView,
     },
     {
-      path: "/profile",
-      name: "Profile",
-      component: ProfileView,
+      path: "/settings",
+      name: "Settings",
+      component: SettingsView,
       meta: { requiresAuth: true },
     },
     {

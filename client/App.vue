@@ -52,14 +52,6 @@ onBeforeMount(async () => {
             </div>
           </RouterLink>
         </li>
-        <li :class="{ underline: currentRouteName == 'Approve Posts' }">
-          <RouterLink :to="{ name: 'Approve Posts' }">
-            <div>
-              <span class="material-symbols-outlined">rule</span>
-              <p>Approve</p>
-            </div>
-          </RouterLink>
-        </li>
         <li :class="{ underline: currentRouteName == 'Friends' }">
           <RouterLink :to="{ name: 'Friends' }">
             <div>
@@ -84,11 +76,19 @@ onBeforeMount(async () => {
             </div>
           </RouterLink>
         </li>
-        <li :class="{ underline: currentRouteName == 'Profile' }">
-          <RouterLink :to="{ name: 'Profile' }">
+        <li :class="{ underline: currentRouteName == 'Approve Posts' }">
+          <RouterLink :to="{ name: 'Approve Posts' }">
             <div>
-              <span class="material-symbols-outlined">account_circle</span>
-              <p>Profile</p>
+              <span class="material-symbols-outlined">rule</span>
+              <p>Approve</p>
+            </div>
+          </RouterLink>
+        </li>
+        <li :class="{ underline: currentRouteName == 'Settings' }">
+          <RouterLink :to="{ name: 'Settings' }">
+            <div>
+              <span class="material-symbols-outlined">settings</span>
+              <p>Settings</p>
             </div>
           </RouterLink>
         </li>
